@@ -29,3 +29,5 @@ jobs:
           git add -A
           git commit -m 'Polish manuscript and expand literature audit'
           git push origin HEAD:agent/initial-theory-experiments
+
+# Retriggered after publishing the checksum-verified single-archive transfer.
