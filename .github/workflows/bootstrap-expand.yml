@@ -21,13 +21,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: agent/initial-theory-experiments
-      - name: Verify and expand staged source archive
+      - name: Assemble and inspect staged archive
         shell: bash
         run: |
           set -euo pipefail
+          ls -l bootstrap/
           cat bootstrap/text-project.tar.gz.b64.part-* > /tmp/source.tar.gz.b64
           base64 --decode /tmp/source.tar.gz.b64 > /tmp/source.tar.gz
-          echo 'b82bd2b7cb7490574f481972dafcaff751d793f6df8b736cb2034c3b020d04de  /tmp/source.tar.gz' | sha256sum --check --strict
+          echo "decoded_bytes=$(wc -c < /tmp/source.tar.gz)"
+          echo "decoded_sha256=$(sha256sum /tmp/source.tar.gz | awk '{print $1}')"
+          tar -tzf /tmp/source.tar.gz | sed -n '1,20p'
+      - name: Verify staged archive checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'b82bd2b7cb7490574f481972dafcaff751d793f6df8b736cb2034c3b020d04de  /tmp/source.tar.gz' | sha256sum --check
+      - name: Expand staged source and clean bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
           mkdir -p /tmp/source-tree
           tar -xzf /tmp/source.tar.gz -C /tmp/source-tree
           shopt -s dotglob nullglob
