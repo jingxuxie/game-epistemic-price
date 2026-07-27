@@ -3,6 +3,8 @@ name: expand-source-bootstrap
 on:
   push:
     branches: [agent/initial-theory-experiments]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
@@ -17,6 +19,8 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/initial-theory-experiments
       - name: Verify and expand staged source archive
         shell: bash
         run: |
