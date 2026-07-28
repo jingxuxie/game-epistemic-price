@@ -1,0 +1,501 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{microtype}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newcommand{\EPoC}{\operatorname{EPoC}}
+\newcommand{\Rset}{\mathcal{R}}
+\newcommand{\I}{\mathcal{I}}
+\title{Supplementary Material for\\
+The Epistemic Price of Coordination: Minimal Handshakes under Private Game Models}
+\author{Anonymous Authors}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Formal Model and Basic Properties}
+
+A finite two-agent epistemic coordination instance is
+\[
+\I=(\Omega,X,Y,A,B,\tau_1,\tau_2,(u_\omega)_{\omega\in\Omega}),
+\]
+where world $\omega$ determines a common payoff
+$u_\omega:A\times B\to\mathbb R$, while the sender and receiver observe only
+$x_\omega=\tau_1(\omega)$ and $y_\omega=\tau_2(\omega)$.
+An $M$-message deterministic protocol is
+$\pi=(\mu,\alpha,\beta)$ with
+$\mu:X\to[M]$, $\alpha:X\to A$, and $\beta:Y\times[M]\to B$.
+Let $v_\omega^\star=\max_{a,b}u_\omega(a,b)$ and
+\[
+R(\pi)=\max_\omega\left[v_\omega^\star-
+ u_\omega(\alpha(x_\omega),\beta(y_\omega,\mu(x_\omega)))\right].
+\]
+Then $\EPoC_\I(M)=\min_\pi R(\pi)$ and
+$C_\I(\epsilon)=\min\{M:\EPoC_\I(M)\le\epsilon\}$, with the convention
+$\min\varnothing=\infty$.
+
+\begin{proposition}[Finite staircase and monotonicity]\label{prop:staircase}
+For every finite instance, $\EPoC(M)$ is attained, is nonincreasing in $M$,
+and belongs to the finite set
+\[
+\{v_\omega^\star-u_\omega(a,b):\omega\in\Omega,a\in A,b\in B\}.
+\]
+Moreover, $\EPoC(M)\le\epsilon$ if and only if $C(\epsilon)\le M$.
+\end{proposition}
+\begin{proof}
+There are finitely many deterministic protocols, so a minimum is attained.
+Adding unused message symbols embeds every $M$-message protocol into the
+$(M+1)$-message class. The regret of a fixed protocol is the maximum of
+finitely many world/action regret entries and hence equals one of them. The
+inverse equivalence follows directly from the definition of $C$.
+\end{proof}
+
+\begin{proposition}[Zero-regret derandomization]
+A public-randomized $M$-message protocol has zero expected regret in every world
+if and only if a deterministic zero-regret $M$-message protocol exists.
+\end{proposition}
+\begin{proof}
+For each world, nonnegative regret has expectation zero only if it is zero
+almost surely over the public seed. Since the world set is finite, the
+intersection of these probability-one events also has probability one and is
+nonempty. Any seed in the intersection induces a deterministic protocol with
+zero regret simultaneously in every world. The converse uses a point mass on a
+deterministic protocol.
+\end{proof}
+
+For $\epsilon\ge0$, write
+\[
+\Rset_\omega^\epsilon=\{(a,b):v_\omega^\star-u_\omega(a,b)\le\epsilon\}.
+\]
+
+\section{Zero-Communication Feasibility}
+
+\begin{theorem}[CSP equivalence]\label{thm:csp}
+A zero-communication protocol of regret at most $\epsilon$ exists if and only
+if the following CSP is feasible: one variable $A_x\in A$ for every $x\in X$,
+one variable $B_y\in B$ for every $y\in Y$, and the constraint
+$(A_{x_\omega},B_{y_\omega})\in\Rset_\omega^\epsilon$ for every world.
+\end{theorem}
+\begin{proof}
+A zero-communication protocol is exactly a pair of local decision rules
+$\alpha:X\to A$ and $\beta:Y\to B$. Setting $A_x=\alpha(x)$ and
+$B_y=\beta(y)$ satisfies every constraint exactly when the protocol meets the
+regret threshold in every world. The converse reads the local rules from a CSP
+assignment.
+\end{proof}
+
+\begin{theorem}[Sharp action-cardinality boundary]\label{thm:action-boundary}
+If both agents have at most two actions, zero-communication feasibility is
+decidable in linear time after scanning the payoff tables. With three actions
+per agent, it is NP-complete even for $\epsilon=0$ and payoffs in $\{0,1\}$.
+\end{theorem}
+\begin{proof}
+For two actions, identify each local variable with a Boolean variable. For each
+world and each forbidden pair $(a,b)\notin\Rset_\omega^\epsilon$, add
+\[
+(A_{x_\omega}\ne a)\lor(B_{y_\omega}\ne b).
+\]
+This is a two-literal clause. An assignment satisfies all clauses if and only
+if it avoids every forbidden pair. There are at most four clauses per world,
+so implication-graph 2-SAT is linear in the encoded instance size.
+
+For hardness with three actions, reduce graph 3-colorability. Given
+$G=(V,E)$, create sender type $x_v$ and receiver type $y_v$ for every vertex,
+and give both agents actions $\{1,2,3\}$. For each $v$, add an equality world
+of types $(x_v,y_v)$ with payoff one exactly when the actions agree. For every
+edge $\{u,v\}$, orient it arbitrarily and add an inequality world of types
+$(x_u,y_v)$ with payoff one exactly when the actions differ. A zero-regret
+protocol must have $\alpha(x_v)=\beta(y_v)$; call this common action the color
+of $v$. Every edge world enforces distinct endpoint colors. Thus a protocol
+induces a proper 3-coloring, and a proper coloring gives a protocol. Membership
+in NP is immediate.
+\end{proof}
+
+\section{Compatibility Hypergraphs}
+
+Fix $\epsilon$. A sender subset $S\subseteq X$ is compatible when there exist
+sender actions $(a_x)_{x\in S}$ and receiver responses $(b_y)_{y\in Y}$ such
+that $(a_x,b_{y_\omega})\in\Rset_\omega^\epsilon$ for every world with
+$x_\omega\in S$. Let $H_\epsilon$ have vertex set $X$ and hyperedges equal to
+inclusion-minimal incompatible subsets. We define $\chi(H_\epsilon)=\infty$
+when a singleton hyperedge makes proper coloring impossible.
+
+\begin{theorem}[Compatibility coloring]\label{thm:compatibility}
+$C_\I(\epsilon)=\chi(H_\epsilon)$.
+\end{theorem}
+\begin{proof}
+Let $\pi$ be an $M$-message protocol. For every message $m$, its fiber
+$S_m=\mu^{-1}(m)$ is compatible, witnessed by the sender actions and receiver
+responses used by $\pi$ on message $m$. Hence no hyperedge is monochromatic,
+so $\mu$ is a proper $M$-coloring.
+
+Conversely, let $c:X\to[M]$ be a proper coloring. If one color class were
+incompatible, finiteness would give an inclusion-minimal incompatible subset
+inside the class, contradicting properness. Choose a compatibility witness for
+each class, use the color as message, and combine the witnesses into the local
+decision rules. The resulting protocol meets tolerance $\epsilon$.
+\end{proof}
+
+\begin{proposition}[Smallest higher-order obstruction]
+There is an instance with three sender types for which every pair can share a
+message but all three cannot; exactly two messages are required.
+\end{proposition}
+\begin{proof}
+Use one receiver type, a trivial sender action, receiver actions $A,B,C$, and
+acceptable sets $S_1=\{A,B\}$, $S_2=\{B,C\}$, and $S_3=\{A,C\}$. Every pair
+intersects, while $S_1\cap S_2\cap S_3=\varnothing$. Thus the pairwise conflict
+graph is empty, but the compatibility hypergraph has the single edge
+$\{1,2,3\}$. Two messages suffice by placing any two types together.
+\end{proof}
+
+\begin{theorem}[Unbounded failure of pairwise confusability]\label{thm:pg}
+For every prime-power projective-plane order $q$, there is a binary-payoff
+instance with $q^2+q+1$ sender types in which every pair is compatible, yet
+exact coordination requires exactly $q+1$ messages.
+\end{theorem}
+\begin{proof}
+Use the lines of $\mathrm{PG}(2,q)$ as sender types, its points as receiver
+actions, one receiver type, and a trivial sender action. A line type receives
+payoff one exactly when the receiver selects a point on the line. Every pair of
+lines intersects, so each pair is compatible.
+
+A message class is compatible exactly when its lines contain a common point.
+Equivalently, an $M$-message protocol selects at most $M$ points hitting all
+lines. The $q+1$ points of any fixed line hit every line, giving an upper bound.
+For a lower bound, take any set $P$ of at most $q$ selected points and choose a
+point $p\notin P$. There are $q+1$ lines through $p$. Each selected point lies
+with $p$ on exactly one of these lines, so at most $|P|\le q$ of the lines meet
+$P$. At least one line through $p$ is unhit. Therefore $q+1$ messages are both
+necessary and sufficient.
+\end{proof}
+
+\section{Specializations and Tractable Structure}
+
+\begin{proposition}[Hitting-set specialization]\label{prop:hitting}
+Suppose there is one receiver type, the sender action is trivial, rewards are
+binary, and sender type $x$ accepts receiver actions $S_x\subseteq B$. Then
+\[
+C(0)=\min\{|P|:P\subseteq B,\ P\cap S_x\ne\varnothing\ \forall x\}.
+\]
+\end{proposition}
+\begin{proof}
+A protocol chooses one receiver action per message. The selected actions hit
+the acceptable set of every type assigned to a message, so all selected
+actions form a hitting set. Conversely, given a hitting set, assign each sender
+type to a selected action in its acceptable set and use that action as the
+response to the corresponding message.
+\end{proof}
+
+\begin{corollary}[Hardness and greedy approximation]
+Minimum-message exact coordination is NP-hard in the setting of
+Proposition~\ref{prop:hitting}. Greedy maximum coverage uses at most
+$H_{|X|}C(0)$ messages.
+\end{corollary}
+\begin{proof}
+Proposition~\ref{prop:hitting} is an approximation-preserving equivalence with
+hitting set, or dually set cover on the universe of sender types. NP-hardness
+and the standard harmonic-number charging analysis of greedy therefore apply.
+\end{proof}
+
+This is a classical zero-error coordination/set-cover connection rather than a
+new generic reduction; it is included to make the structural subclasses and
+experimental baselines explicit.
+
+For a receiver-only instance with response space $B\subseteq\mathbb R^d$, let
+$S_{x,y}^\epsilon$ be the responses meeting tolerance $\epsilon$ in every world
+with type pair $(x,y)$; for an impossible pair set $S_{x,y}^\epsilon=B$.
+
+\begin{theorem}[Helly-rank bound]\label{thm:helly-supp}
+If every $S_{x,y}^\epsilon$ is convex, every inclusion-minimal incompatible set
+has size at most $d+1$.
+\end{theorem}
+\begin{proof}
+If a sender class $C$ is incompatible, then for some receiver type $y$,
+$\bigcap_{x\in C}S_{x,y}^\epsilon=\varnothing$. Helly's theorem gives a
+subfamily indexed by at most $d+1$ sender types with empty intersection.
+Therefore every incompatible set contains an incompatible subset of size at
+most $d+1$, and a minimal one cannot be larger.
+\end{proof}
+
+\begin{corollary}[Intervals]\label{cor:intervals}
+For one-dimensional interval response sets, pairwise compatibility implies
+joint compatibility. With one receiver type, minimum-message exact
+coordination is solved optimally by repeatedly selecting the right endpoint of
+the earliest-ending unhit interval.
+\end{corollary}
+\begin{proof}
+The first claim is Theorem~\ref{thm:helly-supp} with $d=1$. For the algorithm,
+let $I$ be the remaining interval with smallest right endpoint $r$. Every
+feasible stabbing set contains some point $p\in I$. Replacing $p$ by $r$ cannot
+lose any remaining interval $J$ previously hit by $p$: because $p\le r$ and
+$r$ is the smallest right endpoint, $\ell(J)\le p\le r\le r(J)$. Hence an
+optimal solution containing $r$ exists. Delete all intervals containing $r$
+and apply induction.
+\end{proof}
+
+\section{Sparse Type-Interaction Graphs}
+
+Merge all worlds with the same type pair into the relation of action pairs that
+satisfy all of them. Form the bipartite type-interaction graph on $X\cup Y$,
+with edge $(x,y)$ whenever that pair occurs. For fixed $M$, use sender variable
+$Z_x=(m,a)\in[M]\times A$ and receiver variable
+$W_y=(b_1,\ldots,b_M)\in B^M$. The edge constraint accepts
+$((m,a),(b_1,\ldots,b_M))$ exactly when $(a,b_m)$ is acceptable for all worlds
+with pair $(x,y)$.
+
+\begin{proposition}[Bounded-treewidth feasibility]\label{prop:tw}
+Given a width-$w$ tree decomposition, fixed-$M$ feasibility is decidable in
+\[
+O\!\left((|X|+|Y|)D^{w+1}\right),\qquad
+D=\max\{M|A|,|B|^M\},
+\]
+up to polynomial local-constraint checks.
+\end{proposition}
+\begin{proof}
+Run the standard dynamic program on a nice tree decomposition, recording the
+feasible assignments to each bag. Bags contain at most $w+1$ variables, each
+with domain size at most $D$. Introduce, forget, and join transitions retain
+exactly the partial assignments satisfying all constraints whose endpoints
+have appeared. There are $O(|X|+|Y|)$ bags after standard normalization.
+\end{proof}
+
+\section{Metric Action Dictionaries}
+
+Let $(V,d)$ be a finite metric space with diameter $D$. Sender type $x$ has a
+nonempty target uncertainty set $U_x$. Receiver type $g$ is a bijective isometry
+from local action labels $V$ to physical outcomes $V$, and payoff for local
+action $b$ and target $t\in U_x$ is $1-d(g(b),t)/D$. Define
+$\Delta(c,x)=\max_{t\in U_x}d(c,t)$.
+
+\begin{theorem}[Metric dictionary reduction]
+For every $M$,
+\[
+\EPoC(M)=\frac{1}{D}
+\min_{c_1,\ldots,c_M,\,\mu:X\to[M]}
+\max_{x\in X}\Delta(c_{\mu(x)},x).
+\]
+\end{theorem}
+\begin{proof}
+Consider any protocol. For receiver type $g$ and message $m$, its local response
+$b_{g,m}$ induces physical center $c_{g,m}=g(b_{g,m})$. The worst physical error
+on sender type $x$ assigned to $m$ is $\Delta(c_{g,m},x)$. Since $g$ is a
+bijection, every $c\in V$ is implementable as $g(g^{-1}(c))$. Furthermore, the
+family $(U_x)$ is independent of $g$, so for each message class the minimax
+physical-center objective is identical for every receiver type. Replacing all
+$c_{g,m}$ by a common optimal $c_m$ cannot increase regret. This maps every
+protocol to a partition and $M$ centers with the displayed cost.
+
+Conversely, given centers and a map $\mu$, the sender transmits $\mu(x)$ and
+receiver type $g$ chooses local action $g^{-1}(c_{\mu(x)})$. The physical
+outcome is the prescribed center, attaining exactly the displayed cost.
+\end{proof}
+
+When $U_x=\{x\}$, the objective is standard metric $M$-center. The classical
+farthest-first traversal therefore gives a 2-approximate deterministic
+handshake: select an arbitrary center, repeatedly add the point farthest from
+the current centers, and message the nearest selected center.
+
+\section{Closed-Form Additive Lever Frontier}
+
+Let $K=2h+1$ levers form a cycle. The sender observes estimate $x$, while the
+true target is any $t$ satisfying $d_K(x,t)\le r$. Receiver type $y$ is a
+nominal action-frame shift, but the realized local-to-physical dictionary also
+contains a latent bias $\delta$ with $d_K(\delta,0)\le s$. Local action $b$
+selects physical lever $b+y+\delta\pmod K$, and
+\[
+u(t,b,y,\delta)=1-\frac{d_K(b+y+\delta,t)}{h}.
+\]
+
+\begin{lemma}[Odd-cycle covering radius]\label{lem:cover}
+The minimum radius needed to cover an odd cycle of $K$ vertices with at most
+$M$ centers is
+\[
+\rho_K(M)=\left\lceil\frac{K-M}{2M}\right\rceil.
+\]
+\end{lemma}
+\begin{proof}
+A radius-$R$ ball contains at most $2R+1$ vertices, so any cover requires
+$M(2R+1)\ge K$, equivalent to
+$R\ge\lceil(K-M)/(2M)\rceil$. Conversely, if the inequality holds, partition
+the cyclic order into at most $M$ consecutive arcs of size at most $2R+1$ and
+choose a midpoint of each nonempty arc.
+\end{proof}
+
+\begin{lemma}[Two-sided uncertainty dilation]\label{lem:dilation}
+For any estimate $x$ and intended physical center $c$,
+\[
+\max_{\substack{d_K(t,x)\le r\\d_K(\delta,0)\le s}}
+ d_K(c+\delta,t)
+ =\min\{h,d_K(c,x)+r+s\}.
+\]
+\end{lemma}
+\begin{proof}
+The triangle inequality and cycle diameter give
+$d_K(c+\delta,t)\le d_K(c,x)+d_K(\delta,0)+d_K(x,t)
+\le d_K(c,x)+s+r$ and also $d_K(c+\delta,t)\le h$.
+Let $d=d_K(c,x)$ and orient a shortest arc from $x$ to $c$. If
+$d+r+s\le h$, move the realized center distance $s$ farther in that direction
+and the target distance $r$ in the opposite direction; their distance is
+$d+r+s$. If $d+r+s>h$, choose nonnegative $p\le r$ and $q\le s$ with
+$p+q=h-d$ (possible because $h-d<r+s$), move the target distance $p$ opposite
+the arc and the center distance $q$ along it, and obtain distance $h$.
+Thus the upper bound is attained in both cases.
+\end{proof}
+
+\begin{theorem}[Exact additive private-lever EPoC]\label{thm:lever-supp}
+For every $1\le M\le K$,
+\[
+\EPoC_{K,r,s}(M)=
+\frac{\min\left\{h,
+ r+s+\left\lceil\frac{K-M}{2M}\right\rceil\right\}}{h}.
+\]
+\end{theorem}
+\begin{proof}
+Fix a receiver frame $y$. Any deterministic $M$-message protocol induces at
+most $M$ intended physical response centers, one for each used message. If
+estimate $x$ is assigned to center $c$, Lemma~\ref{lem:dilation} makes its
+worst physical error $\min\{h,d_K(c,x)+r+s\}$. Since this is nondecreasing in
+$d_K(c,x)$, minimizing the maximum error requires an optimal $M$-center cover
+of the estimates, whose radius is $\rho_K(M)$ by Lemma~\ref{lem:cover}. This
+proves the lower bound for any fixed frame.
+
+For the upper bound, choose an optimal set of cycle centers and send the index
+of the center assigned to $x$. Receiver type $y$ implements intended center
+$c$ with local action $c-y\pmod K$. The latent bias and target uncertainty then
+incur exactly the dilation in Lemma~\ref{lem:dilation}. The construction works
+for every observed nominal frame, so normalizing by $h$ proves equality.
+\end{proof}
+
+\begin{corollary}[Irreducible floor and inverse threshold]\label{cor:inverse}
+Full sender-type revelation leaves
+\[
+\EPoC_{K,r,s}(K)=\frac{\min\{h,r+s\}}{h}.
+\]
+For $0\le\epsilon<1$, define
+$R=\lfloor\epsilon h\rfloor-r-s$. If $R<0$, no message budget attains the
+tolerance; otherwise
+\[
+C_{K,r,s}(\epsilon)=\left\lceil\frac{K}{2R+1}\right\rceil.
+\]
+\end{corollary}
+\begin{proof}
+The floor follows by substituting $M=K$. For $\epsilon<1$, the diameter cap is
+inactive at every feasible solution, and the threshold is equivalent to
+$\rho_K(M)\le R$, or $M(2R+1)\ge K$.
+\end{proof}
+
+\section{Full-Revelation Floors and Ambiguous Action Dictionaries}
+
+Suppose the sender has one strategically trivial action. For each observed type
+pair, let
+\[
+\Omega(x,y)=\{\omega:x_\omega=x,\ y_\omega=y\},\qquad
+\delta(x,y)=\min_{b\in B}\max_{\omega\in\Omega(x,y)}
+ [v_\omega^\star-u_\omega(b)].
+\]
+
+\begin{proposition}[Receiver-only full-revelation floor]
+If $M\ge |X|$, then
+\[
+\EPoC(M)=\max_{(x,y):\Omega(x,y)\ne\varnothing}\delta(x,y).
+\]
+\end{proposition}
+\begin{proof}
+With $|X|$ messages, the sender can reveal its type $x$. The receiver then
+observes the cell $(x,y)$ and can choose a minimax action attaining
+$\delta(x,y)$ independently for every nonempty cell, giving the upper bound.
+Conversely, even after exact revelation of $x$, every deterministic receiver
+response is one action for all latent worlds in the same cell. Its cellwise
+worst-case regret is therefore at least $\delta(x,y)$; taking the worst cell
+gives the lower bound. Extra messages cannot reveal which latent world inside a
+fixed $(x,y)$ cell occurred because the sender observes only $x$.
+\end{proof}
+
+As a concrete corollary, let $K=2h+1$. The sender observes the physical target
+$x$ exactly. Receiver type $y$ has a set $D_y\subseteq\mathbb Z_K$ of possible
+unobserved additive biases in its local-to-physical action map: local action
+$b$ selects physical lever $b+y+\delta$ for some $\delta\in D_y$. Payoff is one
+minus normalized cyclic distance to $x$.
+
+\begin{corollary}[Full-revelation dictionary floor]
+If $M\ge K$, then
+\[
+\EPoC(K)=\frac{1}{h}\max_y
+\min_{c\in\mathbb Z_K}\max_{\delta\in D_y}d_K(c,\delta).
+\]
+For $D_y=\{0,d_y\}$, the inner value is
+$\lceil d_K(0,d_y)/2\rceil$.
+\end{corollary}
+\begin{proof}
+With full target revelation, fix $(x,y)$. Choosing local action $b$ is
+equivalent to choosing an offset $c=x-(b+y)$; under bias $\delta$, the physical
+error is $d_K(c,\delta)$. The cellwise minimax error is therefore
+$\operatorname{rad}(D_y)=\min_c\max_{\delta\in D_y}d_K(c,\delta)$,
+independent of $x$ by translation invariance. Apply the preceding proposition
+and normalize by $h$. For two points on a cycle, a midpoint of a shortest arc
+achieves radius $\lceil d/2\rceil$, and no smaller ball can contain endpoints
+at distance $d$.
+\end{proof}
+
+\section{Robust Ambiguity Sets}
+
+Suppose each candidate model-generation process $Q$ induces a possible-world
+set $\Omega_Q$. For an ambiguity family $\mathcal Q$, define the robust
+instance by $\Omega_{\mathcal Q}=\bigcup_{Q\in\mathcal Q}\Omega_Q$.
+
+\begin{proposition}[Ambiguity monotonicity]
+If $\mathcal Q\subseteq\mathcal Q'$, then for every $M$ and $\epsilon$,
+\[
+\EPoC_{\mathcal Q}(M)\le\EPoC_{\mathcal Q'}(M),\qquad
+C_{\mathcal Q}(\epsilon)\le C_{\mathcal Q'}(\epsilon).
+\]
+\end{proposition}
+\begin{proof}
+Every protocol's maximum regret can only increase when additional worlds are
+included. Taking the minimum over protocols proves the first inequality; the
+second follows from the inverse definition.
+\end{proof}
+
+\section{MILP Formulation and Reproducibility Details}
+
+For fixed $M$ and $\epsilon$, introduce binary variables $s_{xma}$ and
+$r_{ymb}$. Enforce
+\[
+\sum_{m,a}s_{xma}=1\quad\forall x,
+\qquad
+\sum_b r_{ymb}=1\quad\forall y,m.
+\]
+For every world $\omega$, every unacceptable $(a,b)$, and every message $m$,
+add
+\[
+s_{x_\omega ma}+r_{y_\omega mb}\le1.
+\]
+Feasibility is equivalent to an $M$-message protocol meeting the threshold.
+Searching the finite regret levels by binary search yields exact $\EPoC(M)$.
+The implementation decodes the protocol and independently reevaluates its
+worst-case regret. Only HiGHS status 2 is treated as a certificate of
+infeasibility. A resource limit without a feasible incumbent raises an explicit
+error rather than being silently used by the EPoC binary search.
+
+The projective-plane experiments construct $\mathrm{PG}(2,q)$ over prime fields
+by normalizing nonzero vectors in $\mathbb F_q^3$ and using the incidence
+condition $\ell^\top p=0$. The additive private-lever experiments enumerate all estimates, nominal
+receiver frames, targets, and latent dictionary biases. Besides the 25 plotted
+$K=13$ configurations, an exhaustive audit checks all 169 combinations of
+$r,s$, and $M$ for $K\in\{3,5,7\}$. The map experiment enumerates the eight
+square-grid isometries and cross-checks the general protocol MILP against exact
+finite metric center. Random set-system results use fixed seeds; interval
+exactness is cross-checked against the MILP before scaling the greedy
+algorithm. The repository test suite contains 29 unit, brute-force, and theorem
+cross-checks.
+
+\end{document}

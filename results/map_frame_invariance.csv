@@ -1,0 +1,5 @@
+side_length,frames,messages,epoc,metric_prediction
+5,1,4,0.25,0.25
+5,2,4,0.25,0.25
+5,4,4,0.25,0.25
+5,8,4,0.25,0.25

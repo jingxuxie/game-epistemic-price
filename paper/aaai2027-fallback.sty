@@ -1,0 +1,121 @@
+% Unofficial local preview style.
+% Replace this file by placing the unmodified official aaai2027.sty and
+% aaai2027.bst from the AAAI-27 author kit beside main.tex before submission.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{aaai2027-fallback}[2026/07/26 Unofficial AAAI-27 preview fallback]
+
+\newif\ifaaai@submission
+\aaai@submissionfalse
+\DeclareOption{submission}{\aaai@submissiontrue}
+\DeclareOption{draft}{}
+\DeclareOption{preprint}{}
+\ProcessOptions\relax
+
+\RequirePackage{iftex}
+\RequirePDFTeX
+\RequirePackage[T1]{fontenc}
+\RequirePackage{newtxtext}
+\RequirePackage{helvet}
+\RequirePackage{courier}
+\RequirePackage{placeins}
+
+% Match the public AAAI-27 author-kit geometry closely for local preview.
+\setlength\topmargin{-0.25in}
+\setlength\oddsidemargin{-0.25in}
+\setlength\evensidemargin{-0.25in}
+\setlength\textheight{9.0in}
+\setlength\textwidth{7.0in}
+\setlength\columnsep{0.375in}
+\newlength\titlebox
+\setlength\titlebox{2.25in}
+\setlength\headheight{0pt}
+\setlength\headsep{0pt}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\thispagestyle{empty}
+\pagestyle{empty}
+\flushbottom
+\twocolumn
+\sloppy
+
+\makeatletter
+\def\addcontentsline#1#2#3{}
+\def\aaai@affiliations{}
+\long\gdef\affiliations#1{\gdef\aaai@affiliations{#1}}
+
+\renewcommand{\maketitle}{%
+  \par
+  \begingroup
+    \def\thefootnote{\fnsymbol{footnote}}%
+    \twocolumn[{%
+      \vbox to \titlebox{%
+        \hsize\textwidth
+        \linewidth\hsize
+        \vskip 0.625in minus 0.125in
+        \centering
+        {\LARGE\bfseries \@title\par}
+        \vskip 0.1in plus 0.5fil minus 0.05in
+        \ifaaai@submission
+          {\Large\bfseries Anonymous submission\par}
+        \else
+          {\Large\bfseries \@author\par}
+          \vskip .2em plus 0.25fil
+          {\normalsize \aaai@affiliations\par}
+        \fi
+        \vskip 1em plus 2fil
+      }%
+    }]
+  \endgroup
+  \ifaaai@submission
+    \insert\footins{\noindent\footnotesize
+      This is an anonymized submission for review purposes only. Distribution,
+      citation, or public sharing of this manuscript is strictly prohibited.
+      Copyright and publication details will appear in the final version if accepted.}%
+  \fi
+  \setcounter{footnote}{0}%
+}
+
+\renewenvironment{abstract}{%
+  \centerline{\bfseries Abstract}%
+  \vspace{0.5ex}%
+  \setlength{\leftmargini}{10pt}%
+  \begin{quote}\small
+}{%
+  \par\end{quote}\vskip 1ex
+}
+
+\def\section{\@startsection{section}{1}{\z@}{-2.0ex plus -0.5ex minus -.2ex}{3pt plus 2pt minus 1pt}{\Large\bfseries\centering}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{-2.0ex plus -0.5ex minus -.2ex}{3pt plus 2pt minus 1pt}{\large\bfseries\raggedright}}
+\def\subsubsection{\@startsection{subparagraph}{3}{\z@}{-6pt plus -2pt minus -1pt}{-1em}{\normalsize\bfseries}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{-6pt plus -2pt minus -1pt}{-1em}{\normalsize\bfseries}}
+\setcounter{secnumdepth}{0}
+
+\parindent 10pt
+\topsep 4pt plus 1pt minus 2pt
+\partopsep 1pt plus 0.5pt minus 0.5pt
+\itemsep 0.5pt plus 1pt minus 0.5pt
+\parsep 2pt plus 1pt minus 0.5pt
+\abovedisplayskip 7pt plus 2pt minus 5pt
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip 0pt plus 3pt
+\belowdisplayshortskip 4pt plus 3pt minus 3pt
+
+\def\normalsize{\@setfontsize\normalsize\@xpt{11}}
+\def\small{\@setfontsize\small\@ixpt{10}}
+\def\footnotesize{\@setfontsize\footnotesize\@ixpt{10}}
+\def\scriptsize{\@setfontsize\scriptsize\@viipt{10}}
+\def\tiny{\@setfontsize\tiny\@vipt{7}}
+\def\large{\@setfontsize\large\@xipt{12}}
+\def\Large{\@setfontsize\Large\@xiipt{14}}
+\def\LARGE{\@setfontsize\LARGE\@xivpt{16}}
+
+\AtBeginDocument{%
+  \@ifpackageloaded{natbib}{%
+    \let\cite\citep
+    \let\shortcite\citeyearpar
+    \setcitestyle{aysep={}}
+    \setlength\bibhang{0pt}
+    \bibliographystyle{plainnat}%
+  }{}%
+}
+\makeatother
